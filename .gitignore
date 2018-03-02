@@ -1,3 +1,7 @@
 test/
 *.gz
 *.pyc
+*.meta
+*.index
+*00001
+checkpoint
