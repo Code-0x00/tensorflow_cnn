@@ -2,7 +2,7 @@ import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 import os
 
-import mnist_inference
+import fc_inference
 
 batch_size=100
 learning_rate_base=0.08
@@ -15,11 +15,11 @@ model_save_path='./model/'
 model_name="model.ckpt"
 
 def train(mnist):
-	x=tf.placeholder(tf.float32,[None,mnist_inference.input_node],name='x-input')
-	y_=tf.placeholder(tf.float32,[None,mnist_inference.output_node],name='y-input')
+	x=tf.placeholder(tf.float32,[None,fc_inference.input_node],name='x-input')
+	y_=tf.placeholder(tf.float32,[None,fc_inference.output_node],name='y-input')
 
 	regularizer=tf.contrib.layers.l2_regularizer(regularization_rate)
-	y=mnist_inference.inference(x,regularizer)
+	y=fc_inference.inference(x,regularizer)
 
 	global_step=tf.Variable(0,trainable=False)
 	variable_averages=tf.train.ExponentialMovingAverage(moving_average_decay,global_step)
