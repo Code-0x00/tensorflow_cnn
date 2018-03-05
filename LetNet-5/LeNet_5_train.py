@@ -7,7 +7,7 @@ import LeNet_5_inference
 import numpy as np
 
 batch_size=100
-learning_rate_base=0.08
+learning_rate_base=0.2
 learning_rate_decay=0.99
 regularization_rate=0.0001
 training_steps=30000
@@ -59,6 +59,7 @@ def train(mnist):
 
 			if i%1000==0:
 				print("Steps:%d,Loss:%g"%(step,loss_value))
+				print(learning_rate.eval())
 				saver.save(sess,os.path.join(model_save_path,model_name),global_step=global_step)
 
 def main(argv=None):
