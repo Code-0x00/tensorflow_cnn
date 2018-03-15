@@ -1,7 +1,8 @@
 # Build CNNs with TensorFlow
 # 用 TensorFlow 运行各种深度卷积神经网络
 ## CNN
-一个通用的CNN搭建函数，目标是用户只需定义网络结构和训练方案，就能直接调用这里的函数搭建CNN网络。这里的代码会不断补充，后续的网络实现都会以这里的代码为基础。
+一个通用的CNN搭建函数，目标是用户只需定义网络结构和训练方案，就能直接调用这里的函数搭建CNN网络。这里的代码会不断补充，后续的网络实现都会以这里的代码为基础。  
+如[LeNet-5](https://github.com/Code-0x00/tensorflow_cnn/blob/master/LeNet-5/LeNet_5_train.py)只需用一个lenet列表定义整个网络结构。
 ## FC
 Classify MNIST by 2 layers of *fully connected layers(FC)*.  
 用2层全连接层分类手写字MNIST
