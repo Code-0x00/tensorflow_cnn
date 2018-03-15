@@ -59,16 +59,17 @@ class test_cnn(cnn.Cnn):
 		saver=tf.train.Saver()
 
 		training_steps=30000
-		with tf.Session() as sess:
-			tf.global_variables_initializer().run()
+		with tf.device('/gpu:0'):
+			with tf.Session() as sess:
+				tf.global_variables_initializer().run()
 
-			for i in range(training_steps):
-				xs,ys=mnist.train.next_batch(batch_size)
-				_None,loss_value,step=sess.run([train_op,cost,global_step],feed_dict={x:xs,y_:ys})
+				for i in range(training_steps):
+					xs,ys=mnist.train.next_batch(batch_size)
+					_None,loss_value,step=sess.run([train_op,cost,global_step],feed_dict={x:xs,y_:ys})
 
-				if i%1000==0:
-					print("Steps:%d,Loss:%g"%(step,loss_value))
-					saver.save(sess,os.path.join(model_save_path,model_name),global_step=global_step)
+					if i%1000==0:
+						print("Steps:%d,Loss:%g"%(step,loss_value))
+						saver.save(sess,os.path.join(model_save_path,model_name),global_step=global_step)
 
 def main(argv=None):
 
@@ -81,6 +82,7 @@ def main(argv=None):
 	dnn=test_cnn()
 	mnist=input_data.read_data_sets('../MNIST_data/',one_hot=True)
 	dnn.train(mnist)
+
 
 if __name__=='__main__':
 	tf.app.run()
