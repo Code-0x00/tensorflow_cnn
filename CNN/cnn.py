@@ -1,99 +1,59 @@
 import tensorflow as tf
 
-import numpy as np
-from functools import reduce
+xNode=[784,500,10]
+xLayer=['layer1','layer2']
 
-VGG_MEAN = [103.939, 116.779, 123.68]
+input_node=xNode[0]
+output_node=xNode[-1]
 
+image_size=28
+num_channels=1
+num_labels=10
 
-class Cnn:
+conv1_deep=32
+conv1_size=5
 
-    def __init__(self):
-        print("Cnn...")
+conv2_deep=64
+conv2_size=5
 
-    def build(self):
-        return 0
+fc_size=512
+lenet=[
+{"name":"l1conv1","type":"conv","size":[ 5, 5, 1,32],"strides":[1,1,1,1],"padding":"SAME"},#k_size,k_size,channel,deep
+{"name":"l2pool1","type":"pool","size":[ 1, 2, 2, 1],"strides":[1,2,2,1],"padding":"SAME"},
+{"name":"l3conv2","type":"conv","size":[ 5, 5,32,64],"strides":[1,1,1,1],"padding":"SAME"},
+{"name":"l4pool2","type":"pool","size":[ 1, 2, 2, 1],"strides":[1,2,2,1],"padding":"SAME"},
+{"name":"l5conv3","type":"conv","size":[ 7,7,64,512],"strides":[1,1,1,1],"padding":"VALID"},
+{"name":"reshape","type":"shape"},
+{"name":"l6fcon1","type":"fcon","size":[512,10]}
+]
+def inference(input_tensor,regularizer,train):
+	last_layer_output=input_tensor
+	print 'l0data',last_layer_output.shape
+	for layer in lenet:
+		if layer["type"]=="conv":
+			with tf.variable_scope(layer['name']):
+				weights=tf.get_variable("weight",layer['size'],initializer=tf.truncated_normal_initializer(stddev=0.1))
+				biases=tf.get_variable("bias",layer['size'][3],initializer=tf.constant_initializer(0.0))
+				conv=tf.nn.conv2d(last_layer_output,weights,strides=layer['strides'],padding=layer['padding'])
+				relu=tf.nn.relu(tf.nn.bias_add(conv,biases))
+				last_layer_output=relu
+		elif layer['type']=='fcon':
+			with tf.variable_scope(layer['name']):
+				weights=tf.get_variable('weight',layer['size'],initializer=tf.truncated_normal_initializer(stddev=0.1))
+				if regularizer!=None:
+					tf.add_to_collection('losses',regularizer(weights))
+				biases=tf.get_variable('bias',layer['size'][1],initializer=tf.constant_initializer(0.1))
+				relu=tf.nn.relu(tf.matmul(last_layer_output,weights)+biases)
+				last_layer_output=relu
+		elif layer['type']=='pool':
+			with tf.name_scope(layer['name']):
+				pool=tf.nn.max_pool(last_layer_output,ksize=layer['size'],strides=layer['strides'],padding=layer['padding'])
+				last_layer_output=pool
+		elif layer['type']=='shape':
+			pool_shape=last_layer_output.get_shape().as_list()
+			nodes=pool_shape[1]*pool_shape[2]*pool_shape[3]
+			reshaped=tf.reshape(last_layer_output,[pool_shape[0],nodes])
+			last_layer_output=reshaped
 
-    def avg_pool(self, bottom, name):
-        return tf.nn.avg_pool(bottom, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', name=name)
-
-    def max_pool(self, bottom, name):
-        return tf.nn.max_pool(bottom, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', name=name)
-
-    def conv_layer(self, bottom, in_channels, out_channels, name):
-        with tf.variable_scope(name):
-            filt, conv_biases = self.get_conv_var(3, in_channels, out_channels, name)
-
-            conv = tf.nn.conv2d(bottom, filt, [1, 1, 1, 1], padding='SAME')
-            bias = tf.nn.bias_add(conv, conv_biases)
-            relu = tf.nn.relu(bias)
-
-            return relu
-
-    def fc_layer(self, bottom, in_size, out_size, name):
-        with tf.variable_scope(name):
-            weights, biases = self.get_fc_var(in_size, out_size, name)
-
-            x = tf.reshape(bottom, [-1, in_size])
-            fc = tf.nn.bias_add(tf.matmul(x, weights), biases)
-
-            relu = tf.nn.relu(fc)
-
-            return relu
-
-    def get_conv_var(self, filter_size, in_channels, out_channels, name):
-        initial_value = tf.truncated_normal([filter_size, filter_size, in_channels, out_channels], 0.0, 0.001)
-        filters = self.get_var(initial_value, name, 0, name + "_filters")
-
-        initial_value = tf.truncated_normal([out_channels], .0, .001)
-        biases = self.get_var(initial_value, name, 1, name + "_biases")
-
-        return filters, biases
-
-    def get_fc_var(self, in_size, out_size, name):
-        initial_value = tf.truncated_normal([in_size, out_size], 0.0, 0.001)
-        weights = self.get_var(initial_value, name, 0, name + "_weights")
-
-        initial_value = tf.truncated_normal([out_size], .0, .001)
-        biases = self.get_var(initial_value, name, 1, name + "_biases")
-
-        return weights, biases
-
-    def get_var(self, initial_value, name, idx, var_name):
-        if self.data_dict is not None and name in self.data_dict:
-            value = self.data_dict[name][idx]
-        else:
-            value = initial_value
-
-        if self.trainable:
-            var = tf.Variable(value, name=var_name)
-        else:
-            var = tf.constant(value, dtype=tf.float32, name=var_name)
-
-        self.var_dict[(name, idx)] = var
-
-        # print var_name, var.get_shape().as_list()
-        assert var.get_shape() == initial_value.get_shape()
-
-        return var
-
-    def save_npy(self, sess, npy_path="./vgg19-save.npy"):
-        assert isinstance(sess, tf.Session)
-
-        data_dict = {}
-
-        for (name, idx), var in list(self.var_dict.items()):
-            var_out = sess.run(var)
-            if name not in data_dict:
-                data_dict[name] = {}
-            data_dict[name][idx] = var_out
-
-        np.save(npy_path, data_dict)
-        print(("file saved", npy_path))
-        return npy_path
-
-    def get_var_count(self):
-        count = 0
-        for v in list(self.var_dict.values()):
-            count += reduce(lambda x, y: x * y, v.get_shape().as_list())
-        return count
+		print layer['name'],last_layer_output.shape
+	return last_layer_output
