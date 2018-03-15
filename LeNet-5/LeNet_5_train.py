@@ -83,6 +83,11 @@ def train(mnist):
 				saver.save(sess,os.path.join(model_save_path,model_name),global_step=global_step)
 
 def main(argv=None):
+	if os.path.isfile(model_save_path):
+		print model_save_path,'is a file'
+		return -1
+	if not os.path.exists(model_save_path):
+		os.mkdir(model_save_path)
 	mnist=input_data.read_data_sets('../MNIST_data/',one_hot=True)
 	train(mnist)
 
