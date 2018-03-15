@@ -1,10 +1,30 @@
-import tensorflow as tf
-from tensorflow.examples.tutorials.mnist import input_data
+
 import os
-
-import LeNet_5_inference
-
 import numpy as np
+import tensorflow as tf
+
+import sys
+sys.path.append('..')
+from CNN import cnn
+
+from tensorflow.examples.tutorials.mnist import input_data
+
+#data_size:w,h,channel
+#conv_size:k_size,k_size,channel,deep
+#pool_size:channel,k_size.k_size,deep
+#fcon_size:input,output
+
+lenet=[
+{"name":"l0input","type":"data","size":[28,28,1]},
+{"name":"l1conv1","type":"conv","size":[ 5, 5, 1, 6],"strides":[1,1,1,1],"padding":"SAME"},
+{"name":"l2pool1","type":"pool","size":[ 1, 2, 2, 1],"strides":[1,2,2,1],"padding":"SAME"},
+{"name":"l3conv2","type":"conv","size":[ 5, 5, 6,16],"strides":[1,1,1,1],"padding":"VALID"},
+{"name":"l4pool2","type":"pool","size":[ 1, 2, 2, 1],"strides":[1,2,2,1],"padding":"SAME"},
+{"name":"l5conv3","type":"conv","size":[ 5,5,16,120],"strides":[1,1,1,1],"padding":"VALID"},
+{"name":"reshape","type":"shape"},
+{"name":"l6fcon1","type":"fcon","size":[120,84]},
+{"name":"l7fcon2","type":"fcon","size":[84,10]}
+]
 
 batch_size=100
 learning_rate_base=0.2
@@ -17,16 +37,18 @@ model_save_path='./model/'
 model_name="model.ckpt"
 
 def train(mnist):
-	x=tf.placeholder(tf.float32,[
-		batch_size,
-		LeNet_5_inference.image_size,
-		LeNet_5_inference.image_size,
-		LeNet_5_inference.num_channels],
-		name='x-input')
-	y_=tf.placeholder(tf.float32,[None,LeNet_5_inference.output_node],name='y-input')
+	x=tf.placeholder(tf.float32,
+					[
+					batch_size,
+					lenet[0]['size'][0],
+					lenet[0]['size'][1],
+					lenet[0]['size'][2]
+					],
+					name='x-input')
+	y_=tf.placeholder(tf.float32,[None,lenet[-1]['size'][1]],name='y-input')
 
 	regularizer=tf.contrib.layers.l2_regularizer(regularization_rate)
-	y=LeNet_5_inference.inference(x,regularizer,train=True)
+	y=cnn.inference(lenet,x,regularizer,train=True)
 
 	global_step=tf.Variable(0,trainable=False)
 	variable_averages=tf.train.ExponentialMovingAverage(moving_average_decay,global_step)
@@ -45,25 +67,23 @@ def train(mnist):
 
 	saver=tf.train.Saver()
 	with tf.Session() as sess:
-		#tf.initialize_all_variables().run()
 		tf.global_variables_initializer().run()
 
 
 		for i in range(training_steps):
 			xs,ys=mnist.train.next_batch(batch_size)
 			reshaped_xs=np.reshape(xs,(batch_size,
-				LeNet_5_inference.image_size,
-				LeNet_5_inference.image_size,
-				LeNet_5_inference.num_channels))
+					lenet[0]['size'][0],
+					lenet[0]['size'][1],
+					lenet[0]['size'][2]))
 			_None,loss_value,step=sess.run([train_op,loss,global_step],feed_dict={x:reshaped_xs,y_:ys})
 
 			if i%1000==0:
 				print("Steps:%d,Loss:%g"%(step,loss_value))
-				print(learning_rate.eval())
 				saver.save(sess,os.path.join(model_save_path,model_name),global_step=global_step)
 
 def main(argv=None):
-	mnist=input_data.read_data_sets('MNIST_data/',one_hot=True)
+	mnist=input_data.read_data_sets('../MNIST_data/',one_hot=True)
 	train(mnist)
 
 if __name__=='__main__':
