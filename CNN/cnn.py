@@ -18,13 +18,14 @@ conv2_size=5
 
 fc_size=512
 lenet=[
-{"name":"l1conv1","type":"conv","size":[ 5, 5, 1,32],"strides":[1,1,1,1],"padding":"SAME"},#k_size,k_size,channel,deep
+{"name":"l1conv1","type":"conv","size":[ 5, 5, 1, 6],"strides":[1,1,1,1],"padding":"SAME"},#k_size,k_size,channel,deep
 {"name":"l2pool1","type":"pool","size":[ 1, 2, 2, 1],"strides":[1,2,2,1],"padding":"SAME"},
-{"name":"l3conv2","type":"conv","size":[ 5, 5,32,64],"strides":[1,1,1,1],"padding":"SAME"},
+{"name":"l3conv2","type":"conv","size":[ 5, 5, 6,16],"strides":[1,1,1,1],"padding":"VALID"},
 {"name":"l4pool2","type":"pool","size":[ 1, 2, 2, 1],"strides":[1,2,2,1],"padding":"SAME"},
-{"name":"l5conv3","type":"conv","size":[ 7,7,64,512],"strides":[1,1,1,1],"padding":"VALID"},
+{"name":"l5conv3","type":"conv","size":[ 5,5,16,120],"strides":[1,1,1,1],"padding":"VALID"},
 {"name":"reshape","type":"shape"},
-{"name":"l6fcon1","type":"fcon","size":[512,10]}
+{"name":"l6fcon1","type":"fcon","size":[120,84]},
+{"name":"l7fcon2","type":"fcon","size":[84,10]}
 ]
 def inference(input_tensor,regularizer,train):
 	last_layer_output=input_tensor

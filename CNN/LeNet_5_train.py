@@ -26,7 +26,7 @@ def train(mnist):
 	y_=tf.placeholder(tf.float32,[None,cnn.output_node],name='y-input')
 
 	regularizer=tf.contrib.layers.l2_regularizer(regularization_rate)
-	y=cnn.xInference(x,regularizer,train=True)
+	y=cnn.inference(x,regularizer,train=True)
 
 	global_step=tf.Variable(0,trainable=False)
 	variable_averages=tf.train.ExponentialMovingAverage(moving_average_decay,global_step)
@@ -45,7 +45,6 @@ def train(mnist):
 
 	saver=tf.train.Saver()
 	with tf.Session() as sess:
-		#tf.initialize_all_variables().run()
 		tf.global_variables_initializer().run()
 
 
@@ -59,7 +58,6 @@ def train(mnist):
 
 			if i%1000==0:
 				print("Steps:%d,Loss:%g"%(step,loss_value))
-				print(learning_rate.eval())
 				saver.save(sess,os.path.join(model_save_path,model_name),global_step=global_step)
 
 def main(argv=None):
