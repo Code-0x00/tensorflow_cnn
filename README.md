@@ -17,13 +17,13 @@ Classify MNIST by 7 layers LeNet-5
 参考LeNet-5模型，第一层输入改为28x28（原论文32x32），由3层卷积层和2层全连接层组成，另外前两层卷积层都连接一层池化层。  
 Paper:[Gradient-based learning applied to document recognition](http://xueshu.baidu.com/s?wd=paperuri%3A%2880fd293244903d8233327d0e5ba6de62%29).
 
-|No.|type|output|size|
+|layer|type|output|size|
 |----|----|----|----|
 |0|data|28x28x 1|1x1|
 |1|conv|28x28x 6|5x5|
 |2|pool|14x14x 6|2x2|
 |3|conv|10x10x16|5x5|
 |4|pool| 5x 5x16|2x2|
-|3|conv| 1x1x120|5x5|
-|5|fcon|84x 1|1x1|
-|6|fcon|10x 1|1x1|
+|5|conv| 1x1x120|5x5|
+|6|fcon|84x 1|1x1|
+|7|fcon|10x 1|1x1|
