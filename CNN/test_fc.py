@@ -60,7 +60,7 @@ class test_cnn(cnn.Cnn):
 
 	training_steps=30000
 	with tf.device('/gpu:0'):
-		with tf.Session() as sess:
+		with tf.Session(config = tf.ConfigProto(allow_soft_placement=True)) as sess:
 			tf.global_variables_initializer().run()
 
 			for i in range(training_steps):
