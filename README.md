@@ -1,7 +1,8 @@
 # Build CNNs with TensorFlow
 
 ## FC
-Classify MNIST by 2 layers of *fully connected layers(FC)*.  
+Classify MNIST by 2 layers of *fully connected layers(FC)*.
+
 |type|node|
 |----|----|
 |data|784|
@@ -10,6 +11,7 @@ Classify MNIST by 2 layers of *fully connected layers(FC)*.
 ## LeNet-5
 Classify MNIST by 6 layers LeNet-5  
 Paper:*Gradient-based learning applied to document recognition*.
+
 |No.|type|node|
 |----|----|----|
 |0|data|28x28x1|
