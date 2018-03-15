@@ -1,7 +1,7 @@
 # Build CNNs with TensorFlow
 
 ## FC
-Classify MNIST by 2 layers of *fully connected layers(FC)*.
+Classify MNIST by 2 layers of *fully connected layers(FC)*.  
 |type|node|
 |----|----|
 |data|784|
