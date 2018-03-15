@@ -10,7 +10,7 @@ import os
 VGG_MEAN = [103.939, 116.779, 123.68]
 
 batch_size=100
-learning_rate_base=0.02
+learning_rate_base=0.8
 learning_rate_decay=0.99
 regularization_rate=0.0001
 
@@ -42,13 +42,13 @@ class test_cnn(cnn.Cnn):
 	y_=tf.placeholder(tf.float32,[None,10],name='y-input')
 	self.build(x)
 	
-	y=self.l2
+	y=self.prob
 
 	global_step=tf.Variable(0,trainable=False)
 	variable_averages=tf.train.ExponentialMovingAverage(moving_average_decay,global_step)
 	variable_averages_op=variable_averages.apply(tf.trainable_variables())
 
-	cost = tf.reduce_mean((self.l2 - y_) ** 2)
+	cost = tf.reduce_mean((self.prob - y_) ** 2)
 
 	learning_rate=tf.train.exponential_decay(learning_rate_base,global_step,mnist.train.num_examples/batch_size,learning_rate_decay)
 	train_step=tf.train.GradientDescentOptimizer(learning_rate).minimize(cost,global_step=global_step)
