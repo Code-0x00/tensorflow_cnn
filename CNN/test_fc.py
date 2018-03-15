@@ -36,40 +36,40 @@ class test_cnn(cnn.Cnn):
         self.prob = tf.nn.softmax(self.l2, name="prob")
         self.data_dict = None
 
-	def train(mnist):
+    def train(self,mnist):
 
-		x=tf.placeholder(tf.float32,[None,784],name='x-input')
-		y_=tf.placeholder(tf.float32,[None,10],name='y-input')
-		self.build(x)
-		
-		y=self.l2
+	x=tf.placeholder(tf.float32,[None,784],name='x-input')
+	y_=tf.placeholder(tf.float32,[None,10],name='y-input')
+	self.build(x)
+	
+	y=self.l2
 
-		global_step=tf.Variable(0,trainable=False)
-		variable_averages=tf.train.ExponentialMovingAverage(moving_average_decay,global_step)
-		variable_averages_op=variable_averages.apply(tf.trainable_variables())
+	global_step=tf.Variable(0,trainable=False)
+	variable_averages=tf.train.ExponentialMovingAverage(moving_average_decay,global_step)
+	variable_averages_op=variable_averages.apply(tf.trainable_variables())
 
-		cost = tf.reduce_mean((self.l2 - y_) ** 2)
+	cost = tf.reduce_mean((self.l2 - y_) ** 2)
 
-		learning_rate=tf.train.exponential_decay(learning_rate_base,global_step,mnist.train.num_examples/batch_size,learning_rate_decay)
-		train_step=tf.train.GradientDescentOptimizer(learning_rate).minimize(cost,global_step=global_step)
+	learning_rate=tf.train.exponential_decay(learning_rate_base,global_step,mnist.train.num_examples/batch_size,learning_rate_decay)
+	train_step=tf.train.GradientDescentOptimizer(learning_rate).minimize(cost,global_step=global_step)
 
-		with tf.control_dependencies([train_step,variable_averages_op]):
-			train_op=tf.no_op(name='train')
+	with tf.control_dependencies([train_step,variable_averages_op]):
+		train_op=tf.no_op(name='train')
 
-		saver=tf.train.Saver()
+	saver=tf.train.Saver()
 
-		training_steps=30000
-		with tf.device('/gpu:0'):
-			with tf.Session() as sess:
-				tf.global_variables_initializer().run()
+	training_steps=30000
+	with tf.device('/gpu:0'):
+		with tf.Session() as sess:
+			tf.global_variables_initializer().run()
 
-				for i in range(training_steps):
-					xs,ys=mnist.train.next_batch(batch_size)
-					_None,loss_value,step=sess.run([train_op,cost,global_step],feed_dict={x:xs,y_:ys})
+			for i in range(training_steps):
+				xs,ys=mnist.train.next_batch(batch_size)
+				_None,loss_value,step=sess.run([train_op,cost,global_step],feed_dict={x:xs,y_:ys})
 
-					if i%1000==0:
-						print("Steps:%d,Loss:%g"%(step,loss_value))
-						saver.save(sess,os.path.join(model_save_path,model_name),global_step=global_step)
+				if i%1000==0:
+					print("Steps:%d,Loss:%g"%(step,loss_value))
+					saver.save(sess,os.path.join(model_save_path,model_name),global_step=global_step)
 
 def main(argv=None):
 
