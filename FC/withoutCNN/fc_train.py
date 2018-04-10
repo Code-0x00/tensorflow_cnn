@@ -1,24 +1,10 @@
-import os
-import numpy as np
 import tensorflow as tf
-
-import sys
-sys.path.append('..')
-from CNN import cnn
-
 from tensorflow.examples.tutorials.mnist import input_data
+import os
 
-#data_size:batch_size,w,h,channel
-#conv_size:k_size,k_size,channel,deep
-#pool_size:channel,k_size.k_size,deep
-#fcon_size:input,output
+import fc_inference
 
-fcnet=[
-{"name":"l0input","type":"data","size":[100,784]},
-{"name":"l1fcon0","type":"fcon","size":[784,500]},
-{"name":"l2fcon1","type":"fcon","size":[500, 10]}
-]
-
+batch_size=100
 learning_rate_base=0.08
 learning_rate_decay=0.99
 regularization_rate=0.0001
@@ -29,11 +15,11 @@ model_save_path='./model/'
 model_name="model.ckpt"
 
 def train(mnist):
-	x=tf.placeholder(tf.float32,fcnet[0]['size'],name='x-input')
-	y_=tf.placeholder(tf.float32,[None,fcnet[-1]['size'][1]],name='y-input')
+	x=tf.placeholder(tf.float32,[None,fc_inference.input_node],name='x-input')
+	y_=tf.placeholder(tf.float32,[None,fc_inference.output_node],name='y-input')
 
 	regularizer=tf.contrib.layers.l2_regularizer(regularization_rate)
-	y=cnn.inference(fcnet,x,regularizer,train=True)
+	y=fc_inference.inference(x,regularizer)
 
 	global_step=tf.Variable(0,trainable=False)
 	variable_averages=tf.train.ExponentialMovingAverage(moving_average_decay,global_step)
@@ -44,7 +30,7 @@ def train(mnist):
 
 	loss=cross_entropy_mean+tf.add_n(tf.get_collection('losses'))
 
-	learning_rate=tf.train.exponential_decay(learning_rate_base,global_step,mnist.train.num_examples/fcnet[0]['size'][0],learning_rate_decay)
+	learning_rate=tf.train.exponential_decay(learning_rate_base,global_step,mnist.train.num_examples/batch_size,learning_rate_decay)
 	train_step=tf.train.GradientDescentOptimizer(learning_rate).minimize(loss,global_step=global_step)
 
 	with tf.control_dependencies([train_step,variable_averages_op]):
@@ -52,10 +38,12 @@ def train(mnist):
 
 	saver=tf.train.Saver()
 	with tf.Session() as sess:
+		#tf.initialize_all_variables().run()
 		tf.global_variables_initializer().run()
 
+
 		for i in range(training_steps):
-			xs,ys=mnist.train.next_batch(fcnet[0]['size'][0])
+			xs,ys=mnist.train.next_batch(batch_size)
 			_None,loss_value,step=sess.run([train_op,loss,global_step],feed_dict={x:xs,y_:ys})
 
 			if i%1000==0:
