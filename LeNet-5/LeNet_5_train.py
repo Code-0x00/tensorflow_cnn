@@ -1,4 +1,3 @@
-
 import os
 import numpy as np
 import tensorflow as tf
@@ -61,7 +60,6 @@ def train(mnist):
 	saver=tf.train.Saver()
 	with tf.Session() as sess:
 		tf.global_variables_initializer().run()
-
 
 		for i in range(training_steps):
 			xs,ys=mnist.train.next_batch(lenet[0]['size'][0])

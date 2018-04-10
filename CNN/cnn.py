@@ -1,5 +1,13 @@
 import tensorflow as tf
-
+r"""
+Type:
+	data
+	conv
+	fcon
+	pool
+	shape
+	
+"""
 def inference(cnnNet,input_tensor,regularizer,train):
 
 	for layer in cnnNet:
