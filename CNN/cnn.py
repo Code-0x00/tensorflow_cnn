@@ -42,5 +42,5 @@ def inference(cnnNet,input_tensor,regularizer,train):
 			reshaped=tf.reshape(last_layer_output,[pool_shape[0],nodes])
 			last_layer_output=reshaped
 
-		print layer['name'],last_layer_output.shape
+		print (layer['name'],last_layer_output.shape)
 	return last_layer_output
