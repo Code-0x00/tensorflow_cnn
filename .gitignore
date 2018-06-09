@@ -5,3 +5,5 @@ test/
 *.index
 *00001
 checkpoint
+
+.idea/
