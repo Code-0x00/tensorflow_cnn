@@ -34,6 +34,7 @@ biases = {
     'decoder_b2': tf.Variable(tf.random_normal([n_input])),
 }
 
+
 # 每一层结构都是 xW + b
 # 构建编码器
 def encoder(x):
@@ -51,6 +52,7 @@ def decoder(x):
     layer_2 = tf.nn.sigmoid(tf.add(tf.matmul(layer_1, weights['decoder_h2']),
                                    biases['decoder_b2']))
     return layer_2
+
 
 # 构建模型
 encoder_op = encoder(X)
