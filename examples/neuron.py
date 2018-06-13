@@ -85,7 +85,7 @@ def main(argv):
         return -1
     if not os.path.exists(model_save_path):
         os.mkdir(model_save_path)
-    mnist = input_data.read_data_sets('../../MNIST_data/', one_hot=True)
+    mnist = input_data.read_data_sets('../MNIST_data/', one_hot=True)
     train(mnist, n_net)
     evaluate(mnist, n_net)
 
