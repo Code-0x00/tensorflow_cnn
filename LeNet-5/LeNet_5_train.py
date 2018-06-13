@@ -22,19 +22,15 @@ lenet = [
     {"name": "l7fcon2", "type": "fcon", "size": [84, 10]}
 ]
 
-learning_rate_base = 0.2
-learning_rate_decay = 0.99
-regularization_rate = 0.0001
-training_steps = 30000
-moving_average_decay = 0.99
 
-model_save_path = './model/'
-model_name = "model.ckpt"
+def train(mnist, model_save_path):
+    learning_rate_base = 0.2
+    learning_rate_decay = 0.99
+    regularization_rate = 0.0001
+    training_steps = 30000
+    moving_average_decay = 0.99
 
-
-def train(mnist):
-    x = tf.placeholder(tf.float32, lenet[0]['size'],
-                       name='x-input')
+    x = tf.placeholder(tf.float32, lenet[0]['size'], name='x-input')
     y_ = tf.placeholder(tf.float32, [None, lenet[-1]['size'][1]], name='y-input')
 
     regularizer = tf.contrib.layers.l2_regularizer(regularization_rate)
@@ -67,17 +63,22 @@ def train(mnist):
             tf.summary.scalar('accuracy', loss_value)
             if i % 1000 == 0:
                 print("Steps:%d,Loss:%g" % (step, loss_value))
-                saver.save(sess, os.path.join(model_save_path, model_name), global_step=global_step)
+                saver.save(sess, model_save_path, global_step=global_step)
 
 
-def main():
+def main(argv):
+    model_save_path = './model/'
+    model_name = 'model.ckpt'
+
     if os.path.isfile(model_save_path):
         print(model_save_path, 'is a file')
         return -1
     if not os.path.exists(model_save_path):
         os.mkdir(model_save_path)
     mnist = input_data.read_data_sets('../MNIST_data/', one_hot=True)
-    train(mnist)
+
+    model_save_path = os.path.join(model_save_path, model_name)
+    train(mnist, model_save_path)
 
 
 if __name__ == '__main__':

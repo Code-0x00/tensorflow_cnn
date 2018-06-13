@@ -1,4 +1,5 @@
 import tensorflow as tf
+
 r"""
 Type:
     data
@@ -34,7 +35,9 @@ def inference(cnn_net, input_tensor, regularizer, train):
                 if regularizer is not None:
                     tf.add_to_collection('losses', regularizer(weights))
                 biases = tf.get_variable('bias', layer['size'][1], initializer=tf.constant_initializer(0.1))
-                relu = tf.nn.relu(tf.matmul(last_layer_output, weights)+biases)
+                relu = tf.nn.relu(tf.matmul(last_layer_output, weights) + biases)
+                if train and 'dropout' in layer.keys() and layer['dropout'] < 1.0:
+                    relu = tf.nn.dropout(relu, layer['dropout'])
                 last_layer_output = relu
 
         elif layer['type'] == 'pool':
@@ -45,8 +48,8 @@ def inference(cnn_net, input_tensor, regularizer, train):
 
         elif layer['type'] == 'shape':
             pool_shape = last_layer_output.get_shape().as_list()
-            nodes = pool_shape[1]*pool_shape[2]*pool_shape[3]
-            reshaped = tf.reshape(last_layer_output, [pool_shape[0], nodes])
+            nodes = pool_shape[1] * pool_shape[2] * pool_shape[3]
+            reshaped = tf.reshape(last_layer_output, [-1, nodes])
             last_layer_output = reshaped
 
         print(layer['name'], last_layer_output.shape)
