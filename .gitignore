@@ -12,4 +12,5 @@ checkpoint
 
 # Data set
 *.csv
+*.bmp
 
