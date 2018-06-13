@@ -4,6 +4,12 @@ test/
 *.meta
 *.index
 *00001
+# Model
 checkpoint
 
+# Pycharm
 .idea/
+
+# Data set
+*.csv
+
