@@ -29,3 +29,8 @@ Paper:[Gradient-based learning applied to document recognition](https://ieeexplo
 |5|conv| 1x1x120|5x5|
 |6|fcon|84x 1|1x1|
 |7|fcon|10x 1|1x1|
+
+## AutoEncoder
+自编码器，用两层全连接实现
+## Facial keypoint detection
+人脸关键点检测，点击[这里](https://www.kaggle.com/midzsh98/facial-keypoint-detection/data)到数据下载地址，两个csv文件，解压后共284.09MB。
