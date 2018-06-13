@@ -4,7 +4,6 @@ from tensorflow.examples.tutorials.mnist import input_data
 
 from CNN import cnn
 
-
 r"""
 #data_size:batch_size, w, h, channel
 #conv_size:k_size, k_size, channel, deep
@@ -42,10 +41,10 @@ def train(mnist):
     cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=y, labels=tf.argmax(y_, 1))
     cross_entropy_mean = tf.reduce_mean(cross_entropy)
 
-    loss = cross_entropy_mean+tf.add_n(tf.get_collection('losses'))
+    loss = cross_entropy_mean + tf.add_n(tf.get_collection('losses'))
 
     learning_rate = tf.train.exponential_decay(learning_rate_base, global_step,
-                                               mnist.train.num_examples/fcnet[0]['size'][0], learning_rate_decay)
+                                               mnist.train.num_examples / fcnet[0]['size'][0], learning_rate_decay)
     train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step)
 
     with tf.control_dependencies([train_step, variable_averages_op]):
@@ -64,13 +63,13 @@ def train(mnist):
                 saver.save(sess, os.path.join(model_save_path, model_name), global_step=global_step)
 
 
-def main():
+def main(argv):
     if os.path.isfile(model_save_path):
         print(model_save_path, 'is a file')
         return -1
     if not os.path.exists(model_save_path):
         os.mkdir(model_save_path)
-    mnist = input_data.read_data_sets('MNIST_data/', one_hot=True)
+    mnist = input_data.read_data_sets('../MNIST_data/', one_hot=True)
     train(mnist)
 
 
