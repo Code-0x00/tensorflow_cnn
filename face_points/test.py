@@ -2,25 +2,11 @@ import numpy as np
 import cv2
 import tensorflow as tf
 import matplotlib.pyplot as plt
-from CNN import cnn
+from CNN import cnn,models
 
 
 def main():
-    net = [
-        {"name": "l0input", "type": "data", "size": [64, 96, 96, 1]},
-        {"name": "l1conv1", "type": "conv", "size": [3, 3, 1, 32], "strides": [1, 1, 1, 1], "padding": "SAME"},
-        {"name": "l2pool1", "type": "pool", "size": [1, 2, 2, 1], "strides": [1, 2, 2, 1], "padding": "SAME"},
-        {"name": "l3conv2", "type": "conv", "size": [3, 3, 32, 64], "strides": [1, 1, 1, 1], "padding": "SAME"},
-        {"name": "l4pool2", "type": "pool", "size": [1, 2, 2, 1], "strides": [1, 2, 2, 1], "padding": "SAME"},
-        {"name": "l5conv3", "type": "conv", "size": [3, 3, 64, 128], "strides": [1, 1, 1, 1], "padding": "SAME"},
-        {"name": "l6pool3", "type": "pool", "size": [1, 2, 2, 1], "strides": [1, 2, 2, 1], "padding": "SAME"},
-        {"name": "l7conv4", "type": "conv", "size": [3, 3, 128, 256], "strides": [1, 1, 1, 1], "padding": "VALID"},
-        {"name": "l8pool4", "type": "pool", "size": [1, 2, 2, 1], "strides": [1, 2, 2, 1], "padding": "SAME"},
-        {"name": "reshape", "type": "shape"},
-        {"name": "l9fcon1", "type": "fcon", "size": [6400, 500], 'droup': 1.0},
-        {"name": "l10fcon2", "type": "fcon", "size": [500, 500], 'droup': 0.5},
-        {"name": "l11fcon3", "type": "fcon", "size": [500, 30], 'droup': 1.0}
-    ]
+    net = models.facial_keypoint_net.copy()
     SAVE_PATH = './model/model.ckpt'
 
     x = tf.placeholder("float", shape=[None, 96, 96, 1])

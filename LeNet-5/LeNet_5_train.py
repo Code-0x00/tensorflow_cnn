@@ -3,27 +3,11 @@ import numpy as np
 import tensorflow as tf
 
 from tensorflow.examples.tutorials.mnist import input_data
-from CNN import cnn
-
-
-# data_size:batch_size,w,h,channel
-# conv_size:k_size,k_size,channel,deep
-# pool_size:channel,k_size.k_size,deep
-# fcon_size:input,output
+from CNN import cnn, models
 
 
 def train(mnist, model_save_path):
-    lenet = [
-        {"name": "l0input", "type": "data", "size": [100, 28, 28, 1]},
-        {"name": "l1conv1", "type": "conv", "size": [5, 5, 1, 6], "strides": [1, 1, 1, 1], "padding": "SAME"},
-        {"name": "l2pool1", "type": "pool", "size": [1, 2, 2, 1], "strides": [1, 2, 2, 1], "padding": "SAME"},
-        {"name": "l3conv2", "type": "conv", "size": [5, 5, 6, 16], "strides": [1, 1, 1, 1], "padding": "VALID"},
-        {"name": "l4pool2", "type": "pool", "size": [1, 2, 2, 1], "strides": [1, 2, 2, 1], "padding": "SAME"},
-        {"name": "l5conv3", "type": "conv", "size": [5, 5, 16, 120], "strides": [1, 1, 1, 1], "padding": "VALID"},
-        {"name": "reshape", "type": "shape"},
-        {"name": "l6fcon1", "type": "fcon", "size": [120, 84]},
-        {"name": "l7fcon2", "type": "fcon", "size": [84, 10]}
-    ]
+    lenet = models.le_net.copy()
     learning_rate_base = 0.2
     learning_rate_decay = 0.99
     regularization_rate = 0.0001
