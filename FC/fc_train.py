@@ -11,23 +11,21 @@ r"""
 #fcon_size:input, output
 """
 
-fcnet = [
-    {"name": "l0input", "type": "data", "size": [100, 784]},
-    {"name": "l1fcon0", "type": "fcon", "size": [784, 500]},
-    {"name": "l2fcon1", "type": "fcon", "size": [500, 10]}
-]
-
-learning_rate_base = 0.08
-learning_rate_decay = 0.99
-regularization_rate = 0.0001
-training_steps = 30000
-moving_average_decay = 0.99
-
-model_save_path = './model/'
-model_name = "model.ckpt"
-
 
 def train(mnist):
+    learning_rate_base = 0.08
+    learning_rate_decay = 0.99
+    regularization_rate = 0.0001
+    training_steps = 30000
+    moving_average_decay = 0.99
+    model_save_path = './model/'
+    model_name = "model.ckpt"
+
+    fcnet = [
+        {"name": "l0input", "type": "data", "size": [100, 784]},
+        {"name": "l1fcon0", "type": "fcon", "size": [784, 500]},
+        {"name": "l2fcon1", "type": "fcon", "size": [500, 10]}
+    ]
     x = tf.placeholder(tf.float32, fcnet[0]['size'], name='x-input')
     y_ = tf.placeholder(tf.float32, [None, fcnet[-1]['size'][1]], name='y-input')
 
