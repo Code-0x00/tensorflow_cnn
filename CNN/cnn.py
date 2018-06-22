@@ -54,3 +54,31 @@ def inference(cnn_net, input_tensor, regularizer, train):
 
         print(layer['name'], last_layer_output.shape)
     return last_layer_output
+
+
+def train_step_get(net, train_onece_times, global_step, x, y_):
+    learning_rate_base = 0.08
+    learning_rate_decay = 0.99
+    regularization_rate = 0.0001
+
+    regularizer = tf.contrib.layers.l2_regularizer(regularization_rate)
+    y = inference(net, x, regularizer, train=True)
+
+    cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=y, labels=tf.argmax(y_, 1))
+    cross_entropy_mean = tf.reduce_mean(cross_entropy)
+
+    loss = cross_entropy_mean + tf.add_n(tf.get_collection('losses'))
+
+    learning_rate = tf.train.exponential_decay(learning_rate_base, global_step,
+                                               train_onece_times, learning_rate_decay)
+    train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step)
+
+    return train_step, loss
+
+
+def variable_averages_op_get(global_step):
+    moving_average_decay = 0.99
+
+    variable_averages = tf.train.ExponentialMovingAverage(moving_average_decay, global_step)
+    variable_averages_op = variable_averages.apply(tf.trainable_variables())
+    return variable_averages_op
