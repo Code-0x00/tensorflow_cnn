@@ -2,7 +2,7 @@ import os
 import tensorflow as tf
 import tensorflow.examples.tutorials.mnist.input_data as input_data
 
-from CNN import cnn
+from CNN import cnn, models
 
 model_save_path = './model/'
 model_name = "model"
@@ -76,10 +76,7 @@ def evaluate(mnist, net_model):
 
 
 def main(argv):
-    n_net = [
-        {"name": "l0input", "type": "data", "size": [100, 784]},
-        {"name": "l1fcon0", "type": "fcon", "size": [784, 10]}
-    ]
+    n_net = models.n_net()
     if os.path.isfile(model_save_path):
         print(model_save_path, 'is a file')
         return -1
